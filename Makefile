@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Iinclude
-LDFLAGS = -lsndfile -lsamplerate -lasound -lm
+LDFLAGS = -lsndfile -lsamplerate -lasound
 SRC_DIR = src
 OBJ_DIR = output
 TARGET = $(OBJ_DIR)/jojoplayer

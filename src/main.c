@@ -1,13 +1,28 @@
 #include <stdlib.h>
+#include <signal.h>
 
 #include "utils.h"
 #include "logging.h"
 #include "player.h"
 
+static player_t *player = NULL;
+
+static void handle_sigint(int sig)
+{
+    if (sig == SIGINT)
+    {
+        log_info("SIGINT received, stopping player...");
+        if (player)
+        {
+            player_stop(player);
+        }
+        exit(0);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     const char *file_name = NULL;
-    player_t *player = NULL;
 
     logging_init("jojoplayer", LOG_INFO);
 
@@ -21,12 +36,15 @@ int main(int argc, char *argv[])
 
     when_null_log_error(player, exit, "Error: Could not create player");
 
-    when_failed_log_error(player_play(player, file_name), exit, "Error: Could not play file");
+    when_failed_log_error(player_load_song(player, file_name), exit, "Error: Could not load file");
+
+    signal(SIGINT, handle_sigint);
+
+    player_play(player);
 
 exit:
 
     player_delete(&player);
-
     logging_cleanup();
 
     return 0;
